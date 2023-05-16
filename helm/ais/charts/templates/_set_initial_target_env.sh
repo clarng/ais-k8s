@@ -13,7 +13,7 @@ if [[ "${MY_SERVICE_TYPE}" == "LoadBalancer" ]]; then
     done
 fi
 
-export AIS_PUB_HOSTNAME="${external_ip}"
+export AIS_PUB_HOSTNAME=${external_ip}
 pod_dns="${MY_POD}.${MY_SERVICE}.${K8S_NS}.svc.cluster.local"
 export AIS_INTRA_HOSTNAME=${pod_dns}
 export AIS_DATA_HOSTNAME=${pod_dns}

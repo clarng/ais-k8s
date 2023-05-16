@@ -51,8 +51,8 @@ aiscluster:
   # cluster deployment to work this out for itself, but initial deployment
   # is smoother if you provide this guide.
   #
-  expected_target_nodes: 20
-  expected_proxy_nodes: 20
+  expected_target_nodes: 1
+  expected_proxy_nodes: 1
   #
   # Prefix used on aisnode host nodes for local storage for AIS cluster state.
   #
@@ -77,12 +77,12 @@ aiscluster:
   image:
     aisnode:
       repository: "aistore/aisnode"
-      tag: "3.4"
+      tag: "3.11"
     kubectl:
-      repository: aistore/ais-init
+      repository: "aistore/ais-init"
       tag: latest
     pullPolicy: IfNotPresent
-    pullSecretNames:
+    # pullSecretNames:
       # k8s secret name to use in pulling images; secret populated manually
       #- ais-pull-secret
   #
@@ -124,7 +124,7 @@ aiscluster:
     # external access to target pods is via a hostPort - set this to 51081
     # (or other chosen hostport) is needed; will require privileged
     # containers
-    hostPort: 0
+    hostPort: 51081
 
     # Defines if specified mountpaths are supposed to be used for external persistent volume.
     externalVolumes: false
@@ -132,16 +132,7 @@ aiscluster:
     externalVolumesSize: 50Gi
 
     mountPaths:
-      - /ais/sda
-      - /ais/sdb
-      - /ais/sdc
-      - /ais/sdd
-      - /ais/sde
-      - /ais/sdf
-      - /ais/sdg
-      - /ais/sdh
-      - /ais/sdi
-      - /ais/sdj
+      - /scratch/ais
 
 #
 # If you have an existing graphite installation then set the builtin_monitoring
@@ -227,22 +218,22 @@ grafana:
 #
 # XXX TODO enable persistence
 #
-prometheus:
-  alertmanager:
-    persistentVolume:
-      enabled: false
-  server:
-    persistentVolume:
-      enabled: false
+# prometheus:
+#   alertmanager:
+#     persistentVolume:
+#       enabled: false
+#   server:
+#     persistentVolume:
+#       enabled: false
 
 #
 # Used only if builtin_monitoring is over-ridden to false. No Grafana or Prometheus here - we
 # just arrange to send AIS stats to Graphite, and the external provider is responsible for
 # node metrics, visualization etc.
 #
-external_monitoring:
-  graphite_host: somehost
-  graphite_port: 2003
+# external_monitoring:
+#   graphite_host: somehost
+#   graphite_port: 2003
 
 # ---------------------------------------------------------------------------------
 # |                                                                               |
@@ -320,6 +311,7 @@ ais_config_common:
     max_size:  4194304
     max_total: 67108864
   lru:
+    cleanupwm:         70
     lowwm:             75
     highwm:            90
     out_of_space:      95
@@ -365,8 +357,8 @@ proxy:
       hostname_intra_data:    ""
       l4:
         port:               51080
-        port_intra_control: ""
-        port_intra_data:    ""
+        port_intra_control: 9080
+        port_intra_data:    10080
         sndrcv_buf_size:    131072
       http:
         write_buffer_size: 0
@@ -468,4 +460,21 @@ admin:
 #
 resources: {}
 
-tolerations: {}
+tolerations: [
+  {
+    key: "nvidia.com/gpu",
+    operator: "Exists",
+    effect: "NoSchedule"
+  },
+  {
+    key: "openai.com/team",
+    operator: "Equal",
+    value: "supercomputing"
+  },
+  {
+    key: "openai.com/team",
+    operator: "Equal",
+    value: "all",
+    effect: "NoSchedule"
+  }
+]

@@ -17,10 +17,6 @@
         "aws": {}
         {{ end }}
 },
-"compression": {
-        "block_size":   {{ .compression.block_size }},
-        "checksum":     {{ .compression.checksum }}
-},
 "disk": {
         "disk_util_low_wm":     {{ .disk.disk_util_low_wm }},
         "disk_util_high_wm":    {{ .disk.disk_util_high_wm }},
@@ -46,7 +42,6 @@
         "objsize_limit":        {{ .ec.objsize_limit }},
         "data_slices":          {{ .ec.data_slices }},
         "parity_slices":        {{ .ec.parity_slices }},
-        "batch_size":           {{ .ec.batch_size }},
         "compression":          {{ .ec.compression | quote }},
         "enabled":              {{ .ec.enabled }}
 },
@@ -66,18 +61,14 @@
                 "name":         {{ .keepalivetracker.target.name | quote }},
                 "factor":       {{ .keepalivetracker.target.factor }}
         },
-        "retry_factor":         {{ .keepalivetracker.retry_factor }},
-        "timeout_factor":       {{ .keepalivetracker.timeout_factor }}
+        "retry_factor":         {{ .keepalivetracker.retry_factor }}
 },
 "log": {
         "level":        {{ .log.level | quote }},
-        "max_size":     4194304,
-        "max_total":    67108864
+        "max_size":     "4194304",
+        "max_total":    "67108864"
 },
 "lru": {
-        "lowwm":                {{ .lru.lowwm }},
-        "highwm":               {{ .lru.highwm }},
-        "out_of_space":         {{ .lru.out_of_space }},
         "dont_evict_time":      {{ .lru.dont_evict_time | quote }},
         "capacity_upd_time":    {{ .lru.capacity_upd_time | quote }},
         "enabled":              {{ .lru.enabled }}
@@ -85,8 +76,6 @@
 "mirror": {
         "copies":       {{ .mirror.copies }},
         "burst_buffer": {{ .mirror.burst_buffer }},
-        "util_thresh":  {{ .mirror.util_thresh }},
-        "optimize_put": {{ .mirror.optimize_put }},
         "enabled":      {{ .mirror.enabled }}
 },
 "periodic": {
@@ -97,9 +86,8 @@
 "rebalance": {
         "enabled":         {{ .rebalance.enabled }},
         "compression":     {{ .rebalance.compression | quote }},
-        "quiescent":       {{ .rebalance.quiescent | quote }},
         "dest_retry_time": {{ .rebalance.dest_retry_time | quote}},
-        "multiplier":      {{ .rebalance.multiplier }}
+        "bundle_multiplier":      {{ .rebalance.multiplier }}
 },
 "timeout": {
         "max_keepalive":        {{ .timeout.max_keepalive | quote }},
@@ -116,6 +104,19 @@
 "versioning": {
         "enabled":              {{ .versioning.enabled }},
         "validate_warm_get":    {{ .versioning.validate_warm_get }}
+},
+"space": {
+        "cleanupwm":            {{ .lru.cleanupwm }},
+        "lowwm":                {{ .lru.lowwm }},
+        "highwm":               {{ .lru.highwm }},
+        "out_of_space":         {{ .lru.out_of_space }}
+},
+"transport": {
+        "lz4_block":            "{{ .compression.block_size }}",
+        "idle_teardown":   "4s",
+        "quiescent":"10s",
+        "max_header":4096,
+        "burst_buffer":32
 }
 {{ end -}}
 {{- end -}}

@@ -140,7 +140,7 @@ spec:
               {{ end }}
             {{ else }}
               {{ range .Values.aiscluster.target.mountPaths }}
-            - name: fspath{{ . | replace "/" "." }}
+            - name: fspath{{ . | replace "/" "-" }}
               mountPath: "{{ . }}"
               {{ end }}
             {{ end }}
